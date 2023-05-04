@@ -25,8 +25,10 @@ var { database } = require("./db.js");
 
 const userCollection = database.db(mongodb_database).collection("users");
 
+app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
+app.use("/js", express.static("./js"));
 
 var mongoStore = MongoStore.create({
   mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}`,
@@ -47,17 +49,18 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  let html;
-  if (req.session.authenticated) {
-    html = `<h1>Hello, ${req.session.name}</h1>
-    <br />
-    <a href="/members"><button>Members area</button></a>
-    <a href="/logout"><button>Logout</button></a>`;
-  } else {
-    html = `<a href="/login"><button>Log In</button></a>
-    <a href="/signup"><button>Sign Up</button></a>`;
-  }
-  res.send(html);
+  // let html;
+  // if (req.session.authenticated) {
+  //   html = `<h1>Hello, ${req.session.name}</h1>
+  //   <br />
+  //   <a href="/members"><button>Members area</button></a>
+  //   <a href="/logout"><button>Logout</button></a>`;
+  // } else {
+  //   html = `<a href="/login"><button>Log In</button></a>
+  //   <a href="/signup"><button>Sign Up</button></a>`;
+  // }
+  // res.send(html);
+  res.render("home");
 });
 
 app.get("/signup", (req, res) => {
@@ -193,7 +196,7 @@ app.get("/logout", (req, res) => {
 
 app.get("*", (_, res) => {
   res.status(404);
-  res.send("<h1>Page not found - 404</h1>");
+  res.render("404");
 });
 
 app.listen(port, () => {
