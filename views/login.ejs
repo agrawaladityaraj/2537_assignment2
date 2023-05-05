@@ -1,0 +1,36 @@
+<%- include("templates/header") %>
+<div class="section no-pad-bot" id="index-banner">
+  <div class="container">
+    <br /><br />
+    <h1 class="header center orange-text">Log In</h1>
+    <div class="row center">
+      <form action="/login" method="post" class="col s12">
+        <div class="input-field col s12">
+          <input id="email" name="email" type="email" placeholder="email" />
+          <label for="email">Email</label>
+        </div>
+        <div class="input-field col s12">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="password"
+          />
+          <label for="password">Password</label>
+        </div>
+        <div class="input-field col s12">
+          <input class="btn waves-effect waves-light orange" type="submit" />
+        </div>
+      </form>
+    </div>
+    <% if (errorMessage) { %>
+    <div class="row center">
+      <h5 class="header col s12 deep-orange-text text-accent-3">
+        <%= errorMessage %>
+      </h5>
+    </div>
+    <% } %>
+    <br /><br />
+  </div>
+</div>
+<%- include("templates/footer") %>

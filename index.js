@@ -49,18 +49,11 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  // let html;
-  // if (req.session.authenticated) {
-  //   html = `<h1>Hello, ${req.session.name}</h1>
-  //   <br />
-  //   <a href="/members"><button>Members area</button></a>
-  //   <a href="/logout"><button>Logout</button></a>`;
-  // } else {
-  //   html = `<a href="/login"><button>Log In</button></a>
-  //   <a href="/signup"><button>Sign Up</button></a>`;
-  // }
-  // res.send(html);
-  res.render("home");
+  if (req.session.authenticated) {
+    res.render("authenticatedHome");
+  } else {
+    res.render("unauthenticatedHome");
+  }
 });
 
 app.get("/signup", (req, res) => {
@@ -69,24 +62,7 @@ app.get("/signup", (req, res) => {
     return;
   }
 
-  const { msg } = req.query;
-
-  var html = `<div>Sign Up:</div>
-  <br />
-  <form action='/signup' method='post'>
-  <input name='name' type='text' placeholder='name'>
-  <input name='email' type='email' placeholder='email'>
-  <input name='password' type='password' placeholder='password'>
-  <button>Submit</button>
-  </form>
-  ${
-    msg
-      ? `
-    <br />
-    <div style="color:red;">${msg}</div>`
-      : ""
-  }`;
-  res.send(html);
+  res.render("signup", { errorMessage: req.query.msg });
 });
 
 app.post("/signup", async (req, res) => {
@@ -120,24 +96,7 @@ app.get("/login", (req, res) => {
     res.redirect("/");
     return;
   }
-
-  const { msg } = req.query;
-
-  var html = `<div>Log In:</div>
-  <br />
-  <form action='/login' method='post'>
-  <input name='email' type='email' placeholder='email'>
-  <input name='password' type='password' placeholder='password'>
-  <button>Submit</button>
-  </form>
-  ${
-    msg
-      ? `
-    <br />
-    <div style="color:red;">${msg}</div>`
-      : ""
-  }`;
-  res.send(html);
+  res.render("login", { errorMessage: req.query.msg });
 });
 
 app.post("/login", async (req, res) => {
