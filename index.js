@@ -183,8 +183,13 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/admin", async (req, res) => {
-  if (!req.session.authenticated || req.session.type !== "admin") {
+  if (!req.session.authenticated) {
     res.redirect("/");
+    return;
+  }
+
+  if (req.session.type !== "admin") {
+    res.status(403).render("unauthorizedAdmin");
     return;
   }
 
@@ -192,7 +197,7 @@ app.get("/admin", async (req, res) => {
     .find({ email: { $ne: req.session.email } })
     .project({ name: 1, _id: 1, type: 1 });
   const users = await result.toArray();
-  res.render("admin", { users: users });
+  res.render("admin", { users: users, errorMessage: req.query.msg });
 });
 
 app.get("/members", (req, res) => {
@@ -212,8 +217,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("*", (_, res) => {
-  res.status(404);
-  res.render("404");
+  res.status(404).res.render("404");
 });
 
 app.listen(port, () => {
