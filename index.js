@@ -49,6 +49,22 @@ app.use(
   })
 );
 
+const sessionValidationMiddleware = (req, res, next) => {
+  if (req.session.authenticated) {
+    next();
+  } else {
+    res.redirect("/login");
+  }
+};
+
+const adminAuthorizationMiddleware = (req, res, next) => {
+  if (req.session.type !== "admin") {
+    res.status(403).render("unauthorizedAdmin");
+    return;
+  }
+  next();
+};
+
 app.get("/", (req, res) => {
   if (req.session.authenticated) {
     res.render("authenticatedHome", { name: req.session.name });
@@ -183,30 +199,20 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/admin", async (req, res) => {
-  if (!req.session.authenticated) {
-    res.redirect("/");
-    return;
+app.get(
+  "/admin",
+  sessionValidationMiddleware,
+  adminAuthorizationMiddleware,
+  async (req, res) => {
+    const result = userCollection
+      .find({ email: { $ne: req.session.email } })
+      .project({ name: 1, _id: 1, type: 1 });
+    const users = await result.toArray();
+    res.render("admin", { users: users, errorMessage: req.query.msg });
   }
+);
 
-  if (req.session.type !== "admin") {
-    res.status(403).render("unauthorizedAdmin");
-    return;
-  }
-
-  const result = userCollection
-    .find({ email: { $ne: req.session.email } })
-    .project({ name: 1, _id: 1, type: 1 });
-  const users = await result.toArray();
-  res.render("admin", { users: users, errorMessage: req.query.msg });
-});
-
-app.get("/members", (req, res) => {
-  if (!req.session.authenticated) {
-    res.redirect("/");
-    return;
-  }
-
+app.get("/members", sessionValidationMiddleware, (req, res) => {
   res.render("members");
 });
 
@@ -217,31 +223,26 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get("/mote", async (req, res) => {
-  const { id, to } = req.query;
+app.get(
+  "/mote",
+  sessionValidationMiddleware,
+  adminAuthorizationMiddleware,
+  async (req, res) => {
+    const { id, to } = req.query;
 
-  if (!req.session.authenticated) {
-    res.redirect("/");
-    return;
+    try {
+      await userCollection.updateOne(
+        { _id: new mongodb.ObjectId(id) },
+        { $set: { type: to } }
+      );
+    } catch (error) {
+      res.redirect(`/admin?msg="User not found!"`);
+      return;
+    }
+
+    res.redirect("/admin");
   }
-
-  if (req.session.type !== "admin") {
-    res.status(403).render("unauthorizedAdmin");
-    return;
-  }
-
-  try {
-    await userCollection.updateOne(
-      { _id: new mongodb.ObjectId(id) },
-      { $set: { type: to } }
-    );
-  } catch (error) {
-    res.redirect(`/admin?msg="User not found!"`);
-    return;
-  }
-
-  res.redirect("/admin");
-});
+);
 
 app.get("*", (_, res) => {
   res.status(404).res.render("404");
