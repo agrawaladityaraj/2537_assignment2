@@ -1,0 +1,23 @@
+<%- include("templates/header") %>
+<div class="section no-pad-bot" id="index-banner">
+  <div class="container">
+    <ul class="collection with-header">
+      <li class="collection-header"><h4>Users</h4></li>
+      <% for (let i = 0; i < users.length; i++) { %>
+      <li
+        style="
+          display: flex;
+          justify-content: space-around;
+          flex-wrap: wrap;
+          align-items: center;
+        "
+        class="collection-item"
+      >
+        <h6 class="header"><%= users[i].name %></h6>
+      </li>
+      <% } %>
+    </ul>
+    <br /><br />
+  </div>
+</div>
+<%- include("templates/footer") %>

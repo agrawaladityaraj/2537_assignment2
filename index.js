@@ -109,11 +109,12 @@ app.post("/signup", async (req, res) => {
   }
 
   const hash = await bcrypt.hash(password, saltRounds);
-  await userCollection.insertOne({ name, email, password: hash });
+  await userCollection.insertOne({ name, email, password: hash, type: "user" });
 
   req.session.authenticated = true;
   req.session.name = name;
   req.session.email = email;
+  req.session.type = "user";
   req.session.save();
   res.redirect("/members");
 });
@@ -173,11 +174,25 @@ app.post("/login", async (req, res) => {
     req.session.authenticated = true;
     req.session.name = user.name;
     req.session.email = email;
+    req.session.type = user.type;
     req.session.save();
     res.redirect("/members");
   } else {
     res.redirect(`login?msg="Email or password incorrect"`);
   }
+});
+
+app.get("/admin", async (req, res) => {
+  if (!req.session.authenticated || req.session.type !== "admin") {
+    res.redirect("/");
+    return;
+  }
+
+  const result = userCollection
+    .find({ email: { $ne: req.session.email } })
+    .project({ name: 1, _id: 1, type: 1 });
+  const users = await result.toArray();
+  res.render("admin", { users: users });
 });
 
 app.get("/members", (req, res) => {
@@ -187,13 +202,6 @@ app.get("/members", (req, res) => {
   }
 
   res.render("members");
-  // const random = getRandomInt(3);
-  // const html = `<h1>Hello, ${req.session.name}</h1>
-  // <br />
-  // <image style="width:500px" src="/cat${random}.jpg" alt="cat${random}" />
-  // <br />
-  // <a href="/logout"><button>Logout</button></a>`;
-  // res.send(html);
 });
 
 app.get("/logout", (req, res) => {
@@ -211,9 +219,5 @@ app.get("*", (_, res) => {
 app.listen(port, () => {
   console.log("Node application listening on port " + port);
 });
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max) + 1;
-}
 
 module.exports = app;
