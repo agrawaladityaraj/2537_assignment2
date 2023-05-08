@@ -50,7 +50,7 @@ app.use(
 
 app.get("/", (req, res) => {
   if (req.session.authenticated) {
-    res.render("authenticatedHome");
+    res.render("authenticatedHome", { name: req.session.name });
   } else {
     res.render("unauthenticatedHome");
   }
@@ -62,7 +62,34 @@ app.get("/signup", (req, res) => {
     return;
   }
 
-  res.render("signup", { errorMessage: req.query.msg });
+  res.render("genericAuthentication", {
+    errorMessage: req.query.msg,
+    title: "Sign Up",
+    formAction: "/signup",
+    inputs: [
+      {
+        id: "name",
+        name: "name",
+        type: "text",
+        placeholder: "Name",
+        label: "Name",
+      },
+      {
+        id: "email",
+        name: "email",
+        type: "email",
+        placeholder: "Email",
+        label: "Email",
+      },
+      {
+        id: "password",
+        name: "password",
+        type: "password",
+        placeholder: "Password",
+        label: "Password",
+      },
+    ],
+  });
 });
 
 app.post("/signup", async (req, res) => {
@@ -96,7 +123,28 @@ app.get("/login", (req, res) => {
     res.redirect("/");
     return;
   }
-  res.render("login", { errorMessage: req.query.msg });
+
+  res.render("genericAuthentication", {
+    errorMessage: req.query.msg,
+    title: "Sign In",
+    formAction: "/login",
+    inputs: [
+      {
+        id: "email",
+        name: "email",
+        type: "email",
+        placeholder: "Email",
+        label: "Email",
+      },
+      {
+        id: "password",
+        name: "password",
+        type: "password",
+        placeholder: "Password",
+        label: "Password",
+      },
+    ],
+  });
 });
 
 app.post("/login", async (req, res) => {
@@ -137,13 +185,15 @@ app.get("/members", (req, res) => {
     res.redirect("/");
     return;
   }
-  const random = getRandomInt(3);
-  const html = `<h1>Hello, ${req.session.name}</h1>
-  <br />
-  <image style="width:500px" src="/cat${random}.jpg" alt="cat${random}" />
-  <br />
-  <a href="/logout"><button>Logout</button></a>`;
-  res.send(html);
+
+  res.render("members");
+  // const random = getRandomInt(3);
+  // const html = `<h1>Hello, ${req.session.name}</h1>
+  // <br />
+  // <image style="width:500px" src="/cat${random}.jpg" alt="cat${random}" />
+  // <br />
+  // <a href="/logout"><button>Logout</button></a>`;
+  // res.send(html);
 });
 
 app.get("/logout", (req, res) => {

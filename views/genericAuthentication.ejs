@@ -2,22 +2,20 @@
 <div class="section no-pad-bot" id="index-banner">
   <div class="container">
     <br /><br />
-    <h1 class="header center orange-text">Log In</h1>
+    <h1 class="header center orange-text"><%= title %></h1>
     <div class="row center">
-      <form action="/login" method="post" class="col s12">
-        <div class="input-field col s12">
-          <input id="email" name="email" type="email" placeholder="email" />
-          <label for="email">Email</label>
-        </div>
+      <form action="<%= formAction %>" method="post" class="col s12">
+        <% for (let i = 0; i < inputs.length; i++) { %>
         <div class="input-field col s12">
           <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="password"
+            id="<%= inputs[i].id %>"
+            name="<%= inputs[i].name %>"
+            type="<%= inputs[i].type %>"
+            placeholder="<%= inputs[i].placeholder %>"
           />
-          <label for="password">Password</label>
+          <label for="<%= inputs[i].id %>"><%= inputs[i].label %></label>
         </div>
+        <% } %>
         <div class="input-field col s12">
           <input class="btn waves-effect waves-light orange" type="submit" />
         </div>

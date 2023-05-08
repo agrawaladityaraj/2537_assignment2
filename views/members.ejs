@@ -1,0 +1,19 @@
+<%- include("templates/header") %>
+<div class="section no-pad-bot" id="index-banner">
+  <div class="container">
+    <h1 class="header center orange-text">Cats!</h1>
+    <div class="row center">
+      <% for (let i = 1; i <= 3; i++) { %>
+      <div class="col l4 m6 s12">
+        <img
+          style="width: 100%; height: 100%; margin-bottom: 10px"
+          class="materialboxed"
+          src="/cat<%= i %>.jpg"
+        />
+      </div>
+      <% } %>
+    </div>
+    <br /><br />
+  </div>
+</div>
+<%- include("templates/footer") %>
