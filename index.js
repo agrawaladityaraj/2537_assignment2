@@ -3,6 +3,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const mongodb = require("mongodb");
 const saltRounds = 12;
 
 const port = process.env.PORT || 3000;
@@ -214,6 +215,32 @@ app.get("/logout", (req, res) => {
     req.session.destroy();
     res.redirect("/");
   });
+});
+
+app.get("/mote", async (req, res) => {
+  const { id, to } = req.query;
+
+  if (!req.session.authenticated) {
+    res.redirect("/");
+    return;
+  }
+
+  if (req.session.type !== "admin") {
+    res.status(403).render("unauthorizedAdmin");
+    return;
+  }
+
+  try {
+    await userCollection.updateOne(
+      { _id: new mongodb.ObjectId(id) },
+      { $set: { type: to } }
+    );
+  } catch (error) {
+    res.redirect(`/admin?msg="User not found!"`);
+    return;
+  }
+
+  res.redirect("/admin");
 });
 
 app.get("*", (_, res) => {

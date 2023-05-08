@@ -2,7 +2,9 @@
 <div class="section no-pad-bot" id="index-banner">
   <div class="container">
     <ul class="collection with-header">
-      <li class="collection-header"><h4>Users</h4></li>
+      <li class="collection-header">
+        <h4>Users</h4>
+      </li>
       <% if (errorMessage) { %>
       <li class="collection-item">
         <h6 class="header center deep-orange-text text-accent-3">
@@ -10,24 +12,7 @@
         </h6>
       </li>
       <% } %> <% for (let i = 0; i < users.length; i++) { %>
-      <li
-        style="
-          display: flex;
-          justify-content: space-evenly;
-          flex-wrap: wrap;
-          align-items: center;
-        "
-        class="collection-item"
-      >
-        <h6 class="header">
-          <%= users[i].name %><%=" ("%><%= users[i].type %><%=")"%>
-        </h6>
-        <% if (users[i].type === "user") { %>
-        <a class="btn-small waves-effect waves-light green">Promote to Admin</a>
-        <% } else { %>
-        <a class="btn-small waves-effect waves-light red">Demote to User</a>
-        <% } %>
-      </li>
+      <%- include("templates/user", {user: users[i]}) %>
       <% } %>
     </ul>
     <br /><br />

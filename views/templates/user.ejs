@@ -1,0 +1,18 @@
+<li
+  style="
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-items: center;
+  "
+  class="collection-item"
+>
+  <h6 class="header">
+    <%= user.name %><%=" ("%><%= user.type %><%=")"%>
+  </h6>
+  <% if (user.type === "user") { %>
+  <a href="/mote?id=<%= user._id %>&to=admin" class="btn-small waves-effect waves-light green">Promote to Admin</a>
+  <% } else { %>
+  <a href="/mote?id=<%= user._id %>&to=user" class="btn-small waves-effect waves-light red">Demote to User</a>
+  <% } %>
+</li>
