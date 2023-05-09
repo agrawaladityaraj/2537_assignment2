@@ -245,7 +245,7 @@ app.get(
 );
 
 app.get("*", (_, res) => {
-  res.status(404).res.render("404");
+  res.status(404).render("404");
 });
 
 app.listen(port, () => {
